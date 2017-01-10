@@ -3,7 +3,7 @@ Shmapper is a free lightweight mapper for Sharepoint.
 It uses Client Side Object Model (CSOM) for interacting with Sharepoint, so:   
 - Unlike SSOM, you can use it at any PC, not only where Sharepoint is installed
 - It is compatible with Sharepoint 2010 and 2013 (for 2016 testing needed)
-- No dependencies
+- No extra dependencies
 
 ### Main Features
 - Attribute-based mapper for POCO entities
