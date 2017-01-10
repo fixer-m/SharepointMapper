@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Sharepoint.Shmapper</id>
+    <version>0.1</version>
+    <title>$title$</title>
+    <authors>Bystrov Ilya (fixer_m)</authors>
+    <owners>$author$</owners>
+    <projectUrl>https://github.com/fixer-m/SharepointMapper</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Sharepoint Mapper Shmapper CSOM ORM LINQ</tags>
+  </metadata>
+</package>
