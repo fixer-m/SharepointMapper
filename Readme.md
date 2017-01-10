@@ -33,7 +33,7 @@ public class SpCustomer : ISharepointItem
 ```
 ### Installation
 There are 2 ways to use this library:
-* Install-Package Sharepoint.Shmapper (via Nuget)
+* Install-Package [Sharepoint.Shmapper](https://www.nuget.org/packages/Sharepoint.Shmapper) (via Nuget)
 * Download source code and compile
 
 ### Road Map
