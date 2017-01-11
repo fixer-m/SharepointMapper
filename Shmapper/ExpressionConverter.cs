@@ -14,7 +14,6 @@ using System.Linq.Expressions;
 // TODO: is it possible make Lookup.StartsWith?
 // TODO: not mapped properties ? (product.Active)
 
-
 namespace Shmapper
 {
     public class ExpressionConverter : ExpressionVisitor

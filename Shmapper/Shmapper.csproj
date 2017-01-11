@@ -52,7 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mapping\Attributes.cs" />
+    <Compile Include="Mapping\SharepointListAttribute.cs" />
+    <Compile Include="Mapping\SharepointFieldAttribute.cs" />
     <Compile Include="Mapping\BindData.cs" />
     <Compile Include="ExpressionConverter.cs" />
     <Compile Include="Mapping\SharepointItem.cs" />
