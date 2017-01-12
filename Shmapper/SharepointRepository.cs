@@ -144,7 +144,6 @@ namespace Shmapper
         public void Insert<T>(IEnumerable<T> itemsToInsert) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
-            Context.Load(list);
             Context.Load(list.Fields);
             Context.ExecuteQuery();
 
