@@ -1,6 +1,7 @@
 ## Shmapper - Sharepoint Mapper
-Shmapper is a lightweight object mapper for Sharepoint 2010 and 2013.  
-Allows to map ListItems to your entities. Uses Client Side Object Model (CSOM) for interacting with Sharepoint, so - unlike SSOM - you can use it at any PC, not only where Sharepoint is installed. Implements Repository pattern (or DAO), main class is a wrapper for ClientContext. 
+Shmapper is a lightweight mapper for Sharepoint 2010 and 2013.  
+Maps ListItem to strong-typed entities, supports all CRUD operations and LINQ filtering.  
+Uses Client Side Object Model (CSOM) for interacting with Sharepoint, so - unlike SSOM - you can use it at any PC, not only where Sharepoint is installed.
 
 ### Main Features
 - Attribute-based mapper for POCO entities
