@@ -1,7 +1,7 @@
 ## Shmapper - Sharepoint Mapper
 Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013).  
 Maps ListItem fields to strongly typed entities and provides handy interface to work with them.  
-Uses Client Side Object Model (CSOM) for interacting with Sharepoint, you can use it at any PC, not only where Sharepoint is installed.
+**Wiki:** [Mapping Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Examples) / [Comparison](https://github.com/fixer-m/SharepointMapper/wiki/Comparison) / [CSOM Links](https://github.com/fixer-m/SharepointMapper/wiki/CSOM-Links) 
 
 ### Main Features
 - Attribute-based mapper for POCO entities
@@ -29,6 +29,8 @@ public class SpCustomer : ISharepointItem
   public string Title { get; set; }
 }
 ```
+[More Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Examples) 
+
 ### Installation
 There are 2 ways to use this library:
 * Install-Package [Sharepoint.Shmapper](https://www.nuget.org/packages/Sharepoint.Shmapper) (via Nuget)
