@@ -13,12 +13,12 @@ using System.Reflection;
 
 namespace Shmapper
 {
-    public class SharepointRepository
+    public class SharepointClient
     {
         private ClientContext Context;
         private SharepointMapper Mapper;
 
-        public SharepointRepository(string SiteUrl, ICredentials Credentials)
+        public SharepointClient(string SiteUrl, ICredentials Credentials)
         {
             Context = new ClientContext(SiteUrl);
             Context.Credentials = Credentials;
@@ -76,7 +76,10 @@ namespace Shmapper
 
             return result;
         }
-        
+
+        /// <summary>
+        /// Get item by ID of type <T>.
+        /// </summary>
         public T GetById<T>(int Id) where T : ISharepointItem, new()
         {
             var list = Mapper.GetListForSharepointItem<T>();
@@ -87,11 +90,17 @@ namespace Shmapper
             return Mapper.BuildObject<T>(item);
         }
 
+        /// <summary>
+        /// Update changed item in Sharepoint.
+        /// </summary>
         public void Update<T>(T itemToUpdate) where T : ISharepointItem
         {
             Update((IEnumerable<T>)new[] { itemToUpdate });
         }
 
+        /// <summary>
+        /// Update changed items in Sharepoint.
+        /// </summary>
         public void Update<T>(IEnumerable<T> itemsToUpdate) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
@@ -119,11 +128,17 @@ namespace Shmapper
             Context.ExecuteQuery();
         }
 
+        /// <summary>
+        /// Remove item from Sharepoint.
+        /// </summary>
         public void Delete<T>(T itemToDelete) where T : ISharepointItem
         {
             Delete((IEnumerable<T>)new[] { itemToDelete });
         }
 
+        /// <summary>
+        /// Remove items from Sharepoint.
+        /// </summary>
         public void Delete<T>(IEnumerable<T> itemsToDelete) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
@@ -136,11 +151,17 @@ namespace Shmapper
             Context.ExecuteQuery();
         }
 
+        /// <summary>
+        /// Create new item in Sharepoint.
+        /// </summary>
         public void Insert<T>(T itemToInsert) where T : ISharepointItem
         {
             Insert((IEnumerable<T>)new[] { itemToInsert });
         }
 
+        /// <summary>
+        /// Create new items in Sharepoint.
+        /// </summary>
         public void Insert<T>(IEnumerable<T> itemsToInsert) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();

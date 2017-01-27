@@ -57,7 +57,7 @@
     <Compile Include="Mapping\BindData.cs" />
     <Compile Include="ExpressionConverter.cs" />
     <Compile Include="Mapping\SharepointItem.cs" />
-    <Compile Include="SharepointRepository.cs" />
+    <Compile Include="SharepointClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharepointMapper.cs" />
     <Compile Include="Mapping\SpecialList.cs" />
