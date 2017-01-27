@@ -15,8 +15,8 @@ Maps ListItem fields to strongly typed entities and provides handy interface to 
 
 ### Basic Usage
 ```csharp
-var SharepointRepo = new SharepointRepository("sharepoint-url", new NetworkCredential("user", "password"));
-var CustomerByQuery = SharepointRepo.Query<SpCustomer>(c => c.Title == "Cisco");
+var SharepointClient = new SharepointClient("sharepoint-url", new NetworkCredential("user", "password"));
+var CustomerByQuery = SharepointClient.Query<SpCustomer>(c => c.Title == "Cisco");
 
 // Mapping:
 [SharepointList("CustomersListName")]
