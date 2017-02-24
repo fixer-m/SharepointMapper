@@ -9,7 +9,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
 	<summary>$description$</summary>
-    <releaseNotes>Removed unnecessary load list</releaseNotes>
+    <releaseNotes>Added check for invalid list mapping</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>Sharepoint Mapper Shmapper CSOM ORM LINQ</tags>
   </metadata>
