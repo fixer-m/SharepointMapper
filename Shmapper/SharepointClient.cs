@@ -120,7 +120,7 @@ namespace Shmapper
                 foreach (var objProperty in objProperties)
                 {
                     var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != BindData.LookupValue)
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != MapData.LookupValue)
                         item[SpFieldAttr.InternalName] = objProperty.GetValue(itemToUpdate);
                 }
                 item.Update();
@@ -182,7 +182,7 @@ namespace Shmapper
                 foreach (var objProperty in objProperties)
                 {
                     var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != BindData.LookupValue)
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != MapData.LookupValue)
                     {
                         var newValue = objProperty.GetValue(itemToInsert);
                         item[SpFieldAttr.InternalName] = newValue;

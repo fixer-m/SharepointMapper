@@ -2,6 +2,9 @@
 
 namespace Shmapper
 {
+    /// <summary>
+    /// Maps class to Sharepoint list by Title, Guid or SpecialList
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class SharepointListAttribute : Attribute
     {

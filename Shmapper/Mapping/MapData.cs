@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Shmapper
 {
     /// <summary>
-    /// Used in attribute to bind values of complex type to fields
+    /// Used in attribute to map values of complex type to fields
     /// </summary>
-    public enum BindData
+    public enum MapData
     {
         Default,
         LookupId,

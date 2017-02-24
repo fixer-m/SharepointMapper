@@ -16,6 +16,9 @@ using System.Linq.Expressions;
 
 namespace Shmapper
 {
+    /// <summary>
+    /// Converts lambda expression to camlex filter: Func<T, bool> => Func<ListItem, bool> (where T : ISharepointItem)
+    /// </summary>
     public class ExpressionConverter : ExpressionVisitor
     {
         protected override Expression VisitLambda<T>(Expression<T> node)
@@ -36,7 +39,7 @@ namespace Shmapper
                 if (nodem.Member.MemberType == System.Reflection.MemberTypes.Property)
                 {
                     SharepointFieldAttribute FieldAttribute = (SharepointFieldAttribute)Attribute.GetCustomAttribute(nodem.Member.ReflectedType.GetProperty(nodem.Member.Name), typeof(SharepointFieldAttribute));
-                    if (FieldAttribute != null && (FieldAttribute.BindData == BindData.LookupId || FieldAttribute.BindData == BindData.LookupValue))
+                    if (FieldAttribute != null && (FieldAttribute.BindData == MapData.LookupId || FieldAttribute.BindData == MapData.LookupValue))
                         return Expression.MakeBinary(node.NodeType, ToMappedField(node.Left, FieldAttribute), ToLookupType(node.Right, FieldAttribute));
                 }
             }
@@ -88,10 +91,10 @@ namespace Shmapper
 
             Expression ConvertedToLookupType = Expression.Empty();
 
-            if (FieldAttribute.BindData == BindData.LookupId)
+            if (FieldAttribute.BindData == MapData.LookupId)
                 ConvertedToLookupType = Expression.Convert(ConvertedToBaseFieldType, typeof(DataTypes.LookupId));
 
-            if (FieldAttribute.BindData == BindData.LookupValue)
+            if (FieldAttribute.BindData == MapData.LookupValue)
                 ConvertedToLookupType = Expression.Convert(ConvertedToBaseFieldType, typeof(DataTypes.LookupValue));
 
             return ConvertedToLookupType;

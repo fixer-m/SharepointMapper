@@ -52,9 +52,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mapping\InvalidMappingExeption.cs" />
     <Compile Include="Mapping\SharepointListAttribute.cs" />
     <Compile Include="Mapping\SharepointFieldAttribute.cs" />
-    <Compile Include="Mapping\BindData.cs" />
+    <Compile Include="Mapping\MapData.cs" />
     <Compile Include="ExpressionConverter.cs" />
     <Compile Include="Mapping\SharepointItem.cs" />
     <Compile Include="SharepointClient.cs" />

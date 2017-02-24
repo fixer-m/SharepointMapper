@@ -22,7 +22,10 @@ namespace Shmapper
         {
             Type SpEntityType = typeof(T);
             var SpAttr = SpEntityType.GetCustomAttribute<SharepointListAttribute>();
-            
+
+            if (SpAttr == null)
+                throw new InvalidMappingExeption(String.Format("Type {0} doesn't have attribute [SharepointList].", SpEntityType));
+
             if (SpAttr.Title != null)
                 return Context.Web.Lists.GetByTitle(SpAttr.Title);
 
@@ -67,37 +70,37 @@ namespace Shmapper
         {
             if (fieldValue is FieldLookupValue)
             {
-                if (SpAttr.BindData == BindData.LookupId)
+                if (SpAttr.BindData == MapData.LookupId)
                     fieldValue = ((FieldLookupValue)fieldValue).LookupId;
 
-                if (SpAttr.BindData == BindData.LookupValue || SpAttr.BindData == BindData.Default)
+                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
                     fieldValue = ((FieldLookupValue)fieldValue).LookupValue;
             }
 
             if (fieldValue is FieldLookupValue[])
             {
-                if (SpAttr.BindData == BindData.LookupId)
+                if (SpAttr.BindData == MapData.LookupId)
                     fieldValue = ((FieldLookupValue[])fieldValue).Select(v => v.LookupId).ToList();
 
-                if (SpAttr.BindData == BindData.LookupValue || SpAttr.BindData == BindData.Default)
+                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
                     fieldValue = ((FieldLookupValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
 
             if (fieldValue is FieldUserValue)
             {
-                if (SpAttr.BindData == BindData.LookupId)
+                if (SpAttr.BindData == MapData.LookupId)
                     fieldValue = ((FieldUserValue)fieldValue).LookupId;
 
-                if (SpAttr.BindData == BindData.LookupValue || SpAttr.BindData == BindData.Default)
+                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
                     fieldValue = ((FieldUserValue)fieldValue).LookupValue;
             }
 
             if (fieldValue is FieldUserValue[])
             {
-                if (SpAttr.BindData == BindData.LookupId)
+                if (SpAttr.BindData == MapData.LookupId)
                     fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupId).ToList();
 
-                if (SpAttr.BindData == BindData.LookupValue || SpAttr.BindData == BindData.Default)
+                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
                     fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
 
@@ -109,7 +112,7 @@ namespace Shmapper
         }
 
         /// <summary>
-        /// Build object for mapped type. 
+        /// Build Sharepoint object for mapped type. 
         /// </summary>
         public T BuildObject<T>(ListItem item) where T : new()
         {
@@ -144,33 +147,5 @@ namespace Shmapper
             return obj;
         }
 
-        public bool CheckMapping<T>()
-        {
-            /*
-            if (CheckedMappings.Contains(typeof(T)))
-                return true;
-
-            var SpListAttr = typeof(T).GetCustomAttribute<SharepointListAttribute>();
-            if (SpListAttr == null)
-                throw new Exception(String.Format("Type {0} doesn't have SharepointListAttribute.", typeof(T).FullName));
-
-            var list = GetListForSharepointEntity<T>();
-            Context.Load(list.Fields);
-            Context.ExecuteQuery();
-
-            var objProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
-            foreach (var objProperty in objProperties.Where(p => p.IsDefined(typeof(SharepointFieldAttribute))))
-            {
-                var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                var SharepointFieldName = SpFieldAttr.InternalName;
-                var spField = list.Fields.GetByInternalNameOrTitle(SharepointFieldName);
-
-                var fieldDataType = spField.TypeAsString;
-            }
-
-            CheckedMappings.Add(typeof(T));
-            */
-            return true;
-        }
     }
 }
