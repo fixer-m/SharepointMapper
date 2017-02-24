@@ -29,6 +29,24 @@ public class SpCustomer : ISharepointItem
   public string Title { get; set; }
 }
 ```
+```xml
+<!-- Produced CAML query -->
+<View>
+	<Query>
+		<Where>
+			<Eq>
+				<FieldRef Name="TitleInternalName" />
+				<Value Type="Text">Cisco</Value>
+			</Eq>
+		</Where>
+	</Query>
+	<ViewFields>
+		<FieldRef Name="IdInternalName" />
+		<FieldRef Name="TitleInternalName" />
+	</ViewFields>
+</View>
+```
+
 [More Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Examples) 
 
 ### Installation
