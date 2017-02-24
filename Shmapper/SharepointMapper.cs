@@ -104,6 +104,10 @@ namespace Shmapper
                     fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
 
+            if (fieldValue is FieldCalculatedErrorValue)
+            {
+                fieldValue = "Calculated field contains error.";
+            }
 
             if (fieldValue is FieldUrlValue)
                 fieldValue = ((FieldUrlValue)fieldValue).Url;
