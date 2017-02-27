@@ -30,7 +30,7 @@ public class SpCustomer : ISharepointItem
 }
 ```
 All requests will be translated to CAML query.  
-For example, expression *Query<SpCustomer>(c => c.Title == "Cisco")* will be translated to:
+For example, expression *SharepointClient.Query<SpCustomer>(c => c.Title == "Cisco")* will be translated to:
 ```xml
 <!-- Produced CAML query -->
 <View>
