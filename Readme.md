@@ -16,7 +16,7 @@ Maps ListItem fields to strongly typed entities and provides handy interface to 
 ### Basic Usage
 ```csharp
 var SharepointClient = new SharepointClient("sharepoint-url", new NetworkCredential("user", "password"));
-var CustomerByQuery = SharepointClient.Query<SpCustomer>(c => c.Title == "Cisco");
+var CustomersByQuery = SharepointClient.Query<SpCustomer>(c => c.Title == "Cisco");
 
 // Mapping:
 [SharepointList("CustomersListName")]
@@ -29,6 +29,8 @@ public class SpCustomer : ISharepointItem
   public string Title { get; set; }
 }
 ```
+All requests will be translated to CAML query.  
+For example, expression *Query<SpCustomer>(c => c.Title == "Cisco")* will be translated to:
 ```xml
 <!-- Produced CAML query -->
 <View>
@@ -46,7 +48,6 @@ public class SpCustomer : ISharepointItem
 	</ViewFields>
 </View>
 ```
-
 [More Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Guide) 
 
 ### Installation
