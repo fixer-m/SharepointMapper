@@ -47,7 +47,7 @@ public class SpCustomer : ISharepointItem
 </View>
 ```
 
-[More Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Examples) 
+[More Examples](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Guide) 
 
 ### Installation
 There are 2 ways to use this library:
