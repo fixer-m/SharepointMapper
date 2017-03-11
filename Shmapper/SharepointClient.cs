@@ -57,8 +57,6 @@ namespace Shmapper
 
         private List<T> Query<T>(CamlQuery query) where T : ISharepointItem, new()
         {
-            long StartTicks = Environment.TickCount;
-
             if (query.ViewXml == null)
             {
                 List<string> FieldsToLoad = Mapper.GetMappedFields<T>();
@@ -111,7 +109,8 @@ namespace Shmapper
             List<string> WritableFields = (list.Fields as IEnumerable<Field>).Where(f => !f.ReadOnlyField).Select(f => f.InternalName).ToList();
             WritableFields.Add("_ModerationStatus");
 
-            var objProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty).Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
+            var objProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+                .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
 
             foreach (var itemToUpdate in itemsToUpdate)
             {
@@ -120,7 +119,7 @@ namespace Shmapper
                 foreach (var objProperty in objProperties)
                 {
                     var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != MapData.LookupValue)
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
                         item[SpFieldAttr.InternalName] = objProperty.GetValue(itemToUpdate);
                 }
                 item.Update();
@@ -177,12 +176,13 @@ namespace Shmapper
                 var item = list.AddItem(creatItemInfo);
 
                 Type SpEntityType = typeof(T);
-                var objProperties = SpEntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty).Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
+                var objProperties = SpEntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+                    .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
 
                 foreach (var objProperty in objProperties)
                 {
                     var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.BindData != MapData.LookupValue)
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
                     {
                         var newValue = objProperty.GetValue(itemToInsert);
                         item[SpFieldAttr.InternalName] = newValue;

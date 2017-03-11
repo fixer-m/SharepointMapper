@@ -66,43 +66,45 @@ namespace Shmapper
                 return objProperty.PropertyType;
         }
 
-        private object ReadFieldValueFromComplexType(object fieldValue, SharepointFieldAttribute SpAttr)
+        private object GetFieldValueFromComplexType(object fieldValue, SharepointFieldAttribute SpAttr)
         {
             if (fieldValue is FieldLookupValue)
             {
-                if (SpAttr.BindData == MapData.LookupId)
+                if (SpAttr.MapData == MapData.LookupId)
                     fieldValue = ((FieldLookupValue)fieldValue).LookupId;
 
-                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
+                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
                     fieldValue = ((FieldLookupValue)fieldValue).LookupValue;
             }
 
             if (fieldValue is FieldLookupValue[])
             {
-                if (SpAttr.BindData == MapData.LookupId)
+                if (SpAttr.MapData == MapData.LookupId)
                     fieldValue = ((FieldLookupValue[])fieldValue).Select(v => v.LookupId).ToList();
 
-                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
+                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
                     fieldValue = ((FieldLookupValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
 
+            /* Unnecessary :  FieldUserValue is derived from FieldLookupValue
             if (fieldValue is FieldUserValue)
             {
-                if (SpAttr.BindData == MapData.LookupId)
+                if (SpAttr.MapData == MapData.LookupId)
                     fieldValue = ((FieldUserValue)fieldValue).LookupId;
 
-                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
+                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
                     fieldValue = ((FieldUserValue)fieldValue).LookupValue;
             }
 
             if (fieldValue is FieldUserValue[])
             {
-                if (SpAttr.BindData == MapData.LookupId)
+                if (SpAttr.MapData == MapData.LookupId)
                     fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupId).ToList();
 
-                if (SpAttr.BindData == MapData.LookupValue || SpAttr.BindData == MapData.Default)
+                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
                     fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
+            */
 
             if (fieldValue is FieldCalculatedErrorValue)
             {
@@ -133,7 +135,7 @@ namespace Shmapper
                 {
                     object fieldValue = item.FieldValues[SharepointFieldName];
                     if (fieldValue != null && !fieldValue.GetType().IsPrimitive && !(fieldValue is string) && !(fieldValue is string[]))
-                        fieldValue = ReadFieldValueFromComplexType(fieldValue, SpAttr);
+                        fieldValue = GetFieldValueFromComplexType(fieldValue, SpAttr);
 
                     if (fieldValue == null)
                     {

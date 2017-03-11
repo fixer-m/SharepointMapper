@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace Shmapper
 {
-    [Serializable]
     internal class InvalidMappingExeption : Exception
     {
         public InvalidMappingExeption()
@@ -15,10 +13,6 @@ namespace Shmapper
         }
 
         public InvalidMappingExeption(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected InvalidMappingExeption(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

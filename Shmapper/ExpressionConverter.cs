@@ -39,7 +39,7 @@ namespace Shmapper
                 if (nodem.Member.MemberType == System.Reflection.MemberTypes.Property)
                 {
                     SharepointFieldAttribute FieldAttribute = (SharepointFieldAttribute)Attribute.GetCustomAttribute(nodem.Member.ReflectedType.GetProperty(nodem.Member.Name), typeof(SharepointFieldAttribute));
-                    if (FieldAttribute != null && (FieldAttribute.BindData == MapData.LookupId || FieldAttribute.BindData == MapData.LookupValue))
+                    if (FieldAttribute != null && (FieldAttribute.MapData == MapData.LookupId || FieldAttribute.MapData == MapData.LookupValue))
                         return Expression.MakeBinary(node.NodeType, ToMappedField(node.Left, FieldAttribute), ToLookupType(node.Right, FieldAttribute));
                 }
             }
@@ -91,10 +91,10 @@ namespace Shmapper
 
             Expression ConvertedToLookupType = Expression.Empty();
 
-            if (FieldAttribute.BindData == MapData.LookupId)
+            if (FieldAttribute.MapData == MapData.LookupId)
                 ConvertedToLookupType = Expression.Convert(ConvertedToBaseFieldType, typeof(DataTypes.LookupId));
 
-            if (FieldAttribute.BindData == MapData.LookupValue)
+            if (FieldAttribute.MapData == MapData.LookupValue)
                 ConvertedToLookupType = Expression.Convert(ConvertedToBaseFieldType, typeof(DataTypes.LookupValue));
 
             return ConvertedToLookupType;
