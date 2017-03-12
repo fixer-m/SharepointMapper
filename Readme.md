@@ -1,4 +1,4 @@
-[![NuGet](https://img.shields.io/badge/nuget-v0.1.3-green.svg)](https://www.nuget.org/packages/Sharepoint.Shmapper)
+[![NuGet](https://img.shields.io/badge/nuget-v0.1.4-green.svg)](https://www.nuget.org/packages/Sharepoint.Shmapper)
 
 ## Shmapper - Sharepoint Mapper
 Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013) for CSOM.  
