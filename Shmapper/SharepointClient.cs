@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
-using System.Reflection;
 
 // TODO: check mapping method
 // TODO: exception handling ?
@@ -22,7 +21,7 @@ namespace Shmapper
         {
             Context = new ClientContext(SiteUrl);
             Context.Credentials = Credentials;
-            Mapper = new SharepointMapper(Context); 
+            Mapper = new SharepointMapper(Context);
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace Shmapper
 
             List<T> result = new List<T>();
             foreach (ListItem item in items)
-                result.Add(Mapper.BuildObject<T>(item));
+                result.Add(Mapper.BuildEntityFromItem<T>(item));
 
             return result;
         }
@@ -85,7 +84,7 @@ namespace Shmapper
             Context.Load(item);
             Context.ExecuteQuery();
 
-            return Mapper.BuildObject<T>(item);
+            return Mapper.BuildEntityFromItem<T>(item);
         }
 
         /// <summary>
@@ -106,24 +105,7 @@ namespace Shmapper
             Context.Load(list.Fields);
             Context.ExecuteQuery();
 
-            List<string> WritableFields = (list.Fields as IEnumerable<Field>).Where(f => !f.ReadOnlyField).Select(f => f.InternalName).ToList();
-            WritableFields.Add("_ModerationStatus");
-
-            var objProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
-                .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
-
-            foreach (var itemToUpdate in itemsToUpdate)
-            {
-                var item = list.GetItemById(itemToUpdate.Id);
-
-                foreach (var objProperty in objProperties)
-                {
-                    var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
-                        item[SpFieldAttr.InternalName] = objProperty.GetValue(itemToUpdate);
-                }
-                item.Update();
-            }
+            Mapper.UpdateItemsFromEntities(itemsToUpdate, list);
             Context.ExecuteQuery();
         }
 
@@ -167,29 +149,7 @@ namespace Shmapper
             Context.Load(list.Fields);
             Context.ExecuteQuery();
 
-            List<string> WritableFields = (list.Fields as IEnumerable<Field>).Where(f => !f.ReadOnlyField).Select(f => f.InternalName).ToList();
-            WritableFields.Add("_ModerationStatus");
-
-            var creatItemInfo = new ListItemCreationInformation();
-            foreach (var itemToInsert in itemsToInsert)
-            {
-                var item = list.AddItem(creatItemInfo);
-
-                Type SpEntityType = typeof(T);
-                var objProperties = SpEntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
-                    .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
-
-                foreach (var objProperty in objProperties)
-                {
-                    var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
-                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
-                    {
-                        var newValue = objProperty.GetValue(itemToInsert);
-                        item[SpFieldAttr.InternalName] = newValue;
-                    }
-                }
-                item.Update();
-            }
+            Mapper.CreateItemsFromEntities(itemsToInsert, list);
             Context.ExecuteQuery();
         }
     }

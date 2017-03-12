@@ -86,30 +86,8 @@ namespace Shmapper
                     fieldValue = ((FieldLookupValue[])fieldValue).Select(v => v.LookupValue).ToList();
             }
 
-            /* Unnecessary :  FieldUserValue is derived from FieldLookupValue
-            if (fieldValue is FieldUserValue)
-            {
-                if (SpAttr.MapData == MapData.LookupId)
-                    fieldValue = ((FieldUserValue)fieldValue).LookupId;
-
-                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
-                    fieldValue = ((FieldUserValue)fieldValue).LookupValue;
-            }
-
-            if (fieldValue is FieldUserValue[])
-            {
-                if (SpAttr.MapData == MapData.LookupId)
-                    fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupId).ToList();
-
-                if (SpAttr.MapData == MapData.LookupValue || SpAttr.MapData == MapData.Default)
-                    fieldValue = ((FieldUserValue[])fieldValue).Select(v => v.LookupValue).ToList();
-            }
-            */
-
             if (fieldValue is FieldCalculatedErrorValue)
-            {
                 fieldValue = "Calculated field contains error.";
-            }
 
             if (fieldValue is FieldUrlValue)
                 fieldValue = ((FieldUrlValue)fieldValue).Url;
@@ -117,17 +95,70 @@ namespace Shmapper
             return fieldValue;
         }
 
+        private List<string> GetWritableFieldsOfList(List list)
+        {
+            List<string> WritableFields = (list.Fields as IEnumerable<Field>).Where(f => !f.ReadOnlyField).Select(f => f.InternalName).ToList();
+            WritableFields.Add("_ModerationStatus");
+            return WritableFields;
+        }
+
+        public void UpdateItemsFromEntities<T>(IEnumerable<T> itemsToUpdate, List list) where T : ISharepointItem
+        {
+            List<string> WritableFields = GetWritableFieldsOfList(list);
+            List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+                .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
+
+            foreach (var itemToUpdate in itemsToUpdate)
+            {
+                var item = list.GetItemById(itemToUpdate.Id);
+
+                foreach (var objProperty in EntityProperties)
+                {
+                    var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
+                        item[SpFieldAttr.InternalName] = objProperty.GetValue(itemToUpdate);
+                }
+                item.Update();
+            }
+        }
+
+
+        public void CreateItemsFromEntities<T>(IEnumerable<T> itemsToInsert, List list) where T : ISharepointItem
+        {
+            List<string> WritableFields = GetWritableFieldsOfList(list);
+            List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+               .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
+
+            var creatItemInfo = new ListItemCreationInformation();
+            foreach (var itemToInsert in itemsToInsert)
+            {
+                var item = list.AddItem(creatItemInfo);
+
+                foreach (var objProperty in EntityProperties)
+                {
+                    var SpFieldAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
+                    if (WritableFields.Contains(SpFieldAttr.InternalName) && SpFieldAttr.MapData != MapData.LookupValue)
+                    {
+                        var newValue = objProperty.GetValue(itemToInsert);
+                        item[SpFieldAttr.InternalName] = newValue;
+                    }
+                }
+                item.Update();
+            }
+        }
+
         /// <summary>
         /// Build Sharepoint object for mapped type. 
         /// </summary>
-        public T BuildObject<T>(ListItem item) where T : new()
+        public T BuildEntityFromItem<T>(ListItem item) where T : new()
         {
             var obj = new T();
-            var objType = typeof(T);
-            var objProperties = objType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
-            var fieldsOfItem = item.FieldValues.Select(f => f.Key).ToList();
 
-            foreach (var objProperty in objProperties.Where(p => p.IsDefined(typeof(SharepointFieldAttribute))))
+            var fieldsOfItem = item.FieldValues.Select(f => f.Key).ToList();
+            List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+               .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
+
+            foreach (var objProperty in EntityProperties)
             {
                 var SpAttr = objProperty.GetCustomAttribute<SharepointFieldAttribute>();
                 var SharepointFieldName = SpAttr.InternalName;
