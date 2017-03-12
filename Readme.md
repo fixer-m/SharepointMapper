@@ -1,7 +1,7 @@
-[![NuGet](https://img.shields.io/badge/nuget-v0.1.3-green.svg)](https://www.nuget.org/packages/Sharepoint.Shmapper)
+[![NuGet](https://img.shields.io/badge/nuget-v0.1.4-green.svg)](https://www.nuget.org/packages/Sharepoint.Shmapper)
 
 ## Shmapper - Sharepoint Mapper
-Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013).  
+Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013) for CSOM.  
 Maps ListItem fields to strongly typed entities and provides handy interface to work with them.  
 **Wiki:** [Mapping How-to](https://github.com/fixer-m/SharepointMapper/wiki/Mapping-Guide) / [Comparison with alternatives](https://github.com/fixer-m/SharepointMapper/wiki/Comparison) / [CSOM Info](https://github.com/fixer-m/SharepointMapper/wiki/CSOM-Links) 
 
