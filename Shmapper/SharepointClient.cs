@@ -88,43 +88,43 @@ namespace Shmapper
         }
 
         /// <summary>
-        /// Update changed item in Sharepoint.
+        /// Update corresponding changed item in Sharepoint.
         /// </summary>
-        public void Update<T>(T itemToUpdate) where T : ISharepointItem
+        public void Update<T>(T Entity) where T : ISharepointItem
         {
-            Update((IEnumerable<T>)new[] { itemToUpdate });
+            Update((IEnumerable<T>)new[] { Entity });
         }
 
         /// <summary>
-        /// Update changed items in Sharepoint.
+        /// Update corresponding items in Sharepoint.
         /// </summary>
-        public void Update<T>(IEnumerable<T> itemsToUpdate) where T : ISharepointItem
+        public void Update<T>(IEnumerable<T> Entities) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
 
             Context.Load(list.Fields);
             Context.ExecuteQuery();
 
-            Mapper.UpdateItemsFromEntities(itemsToUpdate, list);
+            Mapper.UpdateItemsFromEntities(Entities, list);
             Context.ExecuteQuery();
         }
 
         /// <summary>
-        /// Remove item from Sharepoint.
+        /// Remove corresponding item from Sharepoint.
         /// </summary>
-        public void Delete<T>(T itemToDelete) where T : ISharepointItem
+        public void Delete<T>(T Entity) where T : ISharepointItem
         {
-            Delete((IEnumerable<T>)new[] { itemToDelete });
+            Delete((IEnumerable<T>)new[] { Entity });
         }
 
         /// <summary>
-        /// Remove items from Sharepoint.
+        /// Remove corresponding items from Sharepoint.
         /// </summary>
-        public void Delete<T>(IEnumerable<T> itemsToDelete) where T : ISharepointItem
+        public void Delete<T>(IEnumerable<T> Entities) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
 
-            foreach (var itemToDelete in itemsToDelete)
+            foreach (var itemToDelete in Entities)
             {
                 var item = list.GetItemById(itemToDelete.Id);
                 item.DeleteObject();
@@ -135,21 +135,21 @@ namespace Shmapper
         /// <summary>
         /// Create new item in Sharepoint.
         /// </summary>
-        public void Insert<T>(T itemToInsert) where T : ISharepointItem
+        public void Insert<T>(T Entitiy) where T : ISharepointItem
         {
-            Insert((IEnumerable<T>)new[] { itemToInsert });
+            Insert((IEnumerable<T>)new[] { Entitiy });
         }
 
         /// <summary>
         /// Create new items in Sharepoint.
         /// </summary>
-        public void Insert<T>(IEnumerable<T> itemsToInsert) where T : ISharepointItem
+        public void Insert<T>(IEnumerable<T> Entity) where T : ISharepointItem
         {
             var list = Mapper.GetListForSharepointItem<T>();
             Context.Load(list.Fields);
             Context.ExecuteQuery();
 
-            Mapper.CreateItemsFromEntities(itemsToInsert, list);
+            Mapper.CreateItemsFromEntities(Entity, list);
             Context.ExecuteQuery();
         }
     }

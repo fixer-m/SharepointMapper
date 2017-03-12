@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Shmapper")]
-[assembly: AssemblyDescription("Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013). Maps ListItem fields to strongly typed entities and provides handy interface to work with them.")]
+[assembly: AssemblyDescription("Shmapper is a lightweight mapper for Sharepoint lists (2010 and 2013) for CSOM. Maps ListItem fields to strongly typed entities and provides handy interface to work with them.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Shmapper")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.3.0")]
-[assembly: AssemblyFileVersion("0.1.3.0")]
+[assembly: AssemblyVersion("0.1.4.0")]
+[assembly: AssemblyFileVersion("0.1.4.0")]

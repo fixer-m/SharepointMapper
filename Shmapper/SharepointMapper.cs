@@ -102,13 +102,13 @@ namespace Shmapper
             return WritableFields;
         }
 
-        public void UpdateItemsFromEntities<T>(IEnumerable<T> itemsToUpdate, List list) where T : ISharepointItem
+        public void UpdateItemsFromEntities<T>(IEnumerable<T> Entities, List list) where T : ISharepointItem
         {
             List<string> WritableFields = GetWritableFieldsOfList(list);
             List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
                 .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
 
-            foreach (var itemToUpdate in itemsToUpdate)
+            foreach (var itemToUpdate in Entities)
             {
                 var item = list.GetItemById(itemToUpdate.Id);
 
@@ -122,15 +122,17 @@ namespace Shmapper
             }
         }
 
-
-        public void CreateItemsFromEntities<T>(IEnumerable<T> itemsToInsert, List list) where T : ISharepointItem
+        /// <summary>
+        /// Create items Build Sharepoint object for mapped type. 
+        /// </summary>
+        public void CreateItemsFromEntities<T>(IEnumerable<T> Entities, List list) where T : ISharepointItem
         {
             List<string> WritableFields = GetWritableFieldsOfList(list);
             List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
                .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
 
             var creatItemInfo = new ListItemCreationInformation();
-            foreach (var itemToInsert in itemsToInsert)
+            foreach (var itemToInsert in Entities)
             {
                 var item = list.AddItem(creatItemInfo);
 
@@ -150,11 +152,11 @@ namespace Shmapper
         /// <summary>
         /// Build Sharepoint object for mapped type. 
         /// </summary>
-        public T BuildEntityFromItem<T>(ListItem item) where T : new()
+        public T BuildEntityFromItem<T>(ListItem Item) where T : new()
         {
             var obj = new T();
 
-            var fieldsOfItem = item.FieldValues.Select(f => f.Key).ToList();
+            var fieldsOfItem = Item.FieldValues.Select(f => f.Key).ToList();
             List<PropertyInfo> EntityProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
                .Where(p => p.IsDefined(typeof(SharepointFieldAttribute))).ToList();
 
@@ -164,7 +166,7 @@ namespace Shmapper
                 var SharepointFieldName = SpAttr.InternalName;
                 if (fieldsOfItem.Contains(SharepointFieldName))
                 {
-                    object fieldValue = item.FieldValues[SharepointFieldName];
+                    object fieldValue = Item.FieldValues[SharepointFieldName];
                     if (fieldValue != null && !fieldValue.GetType().IsPrimitive && !(fieldValue is string) && !(fieldValue is string[]))
                         fieldValue = GetFieldValueFromComplexType(fieldValue, SpAttr);
 
