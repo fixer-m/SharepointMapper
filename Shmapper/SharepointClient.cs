@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Text;
 
 // TODO: check mapping method
 // TODO: exception handling ?
@@ -22,6 +23,84 @@ namespace Shmapper
             Context = new ClientContext(SiteUrl);
             Context.Credentials = Credentials;
             Mapper = new SharepointMapper(Context);
+        }
+
+        public string GeneratePocoClasses()
+        {
+            string ret = null;
+            var web = Context.Web;
+            Context.Load(web,w=>w.Lists);
+            Context.ExecuteQuery();
+
+            var lists = web.Lists.ToList().Where(l =>(!l.Hidden));
+            var stringBuilder = new StringBuilder();
+            foreach (var list in lists)
+            {
+                stringBuilder.Append(PocoClassText(list));
+            }
+            return stringBuilder.ToString( );
+        }
+
+        private Type SpTypeToCSharp(string spType)
+        {
+            Dictionary<string, Type> decode = new Dictionary< string,Type>()
+            {
+                { "User",typeof(string)},
+                { "Text",typeof(string)},
+                { "Number",typeof(int)},
+                { "Computed",typeof(string)},
+                { "DateTime",typeof(DateTime)},
+                
+
+            };
+            return decode.ContainsKey(spType) ? decode[spType] : typeof(string);
+
+        }
+
+
+
+        private string PocoClassText(List list)
+        {
+            var sb = new StringBuilder();
+            Context.Load(list, l => l.Fields);
+            Context.ExecuteQuery();
+            sb.Append($@"
+[SharepointList(""{list.Title}"")]
+public partial class {list.EntityTypeName}:ISharepointItem // {list.Title}
+{{
+");
+
+            var counterField = list.Fields.First(f => f.TypeAsString == "Counter");
+           
+            // add Id property
+            sb.Append($@"
+                    [SharepointField(""{counterField.StaticName}"" )]
+                        public int Id  {{get;set;}} //{counterField.EntityPropertyName}:{counterField.TypeAsString} , {counterField.Description}
+                    ");
+            // add All over properties
+            var fields = list.Fields.ToList().Where(f=>(!f.Hidden)&&(f.TypeAsString!= "Computed") && (f.TypeAsString != "Counter"));
+            foreach (Field field in fields)
+            {
+                string lookUp =  "";
+                Type spTypeToCSharp = SpTypeToCSharp(field.TypeAsString);
+                string nullableModifier = spTypeToCSharp.IsValueType&& (!field.Required) ? "?" : "";
+                if (field.TypeAsString == "Lookup")
+                {
+                    lookUp = ",MapData.LookupValue";
+                    sb.Append($@"
+                    [SharepointField(""{field.StaticName}"" , MapData.LookupId)]
+                        public  int {field.StaticName}Id {{get;set;}} //{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+                    ");
+                }
+                sb.Append($@"
+                    [SharepointField(""{field.StaticName}"" {lookUp})]
+                        public {spTypeToCSharp.Name}{nullableModifier} {field.StaticName} {{get;set;}} //{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+                    ");
+            }
+            sb.Append($@"
+                }}//{list.Title}
+");
+            ; return sb.ToString();
         }
 
         /// <summary>
