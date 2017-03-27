@@ -14,8 +14,7 @@ using System.Text;
 namespace Shmapper
 {
     public class SharepointClient
-    {
-        private ClientContext Context;
+    {   private ClientContext Context;
         private SharepointMapper Mapper;
 
         public SharepointClient(string SiteUrl, ICredentials Credentials)
@@ -27,16 +26,28 @@ namespace Shmapper
 
         public string GeneratePocoClasses()
         {
-            string ret = null;
+            //некоторые имена списков  криво  переводятся в имена классов,  например Для  аудиторий формировалось кривое имя и для баннеров, поэтому их надо подменить на человеко читаеммые
+            Dictionary<string,string> recodeClassNames=new Dictionary<string, string>()
+            {
+                { "Аудитории","Audience"},
+                { "Баннеры","Banner"},
+                { "Территории","Territory"},
+                { "Список мероприятий","Event"},
+                { "Решения","Decisions"},
+                { "Языки контента","ContentLang"},
+            };
+           
             var web = Context.Web;
             Context.Load(web,w=>w.Lists);
             Context.ExecuteQuery();
 
-            var lists = web.Lists.ToList().Where(l =>(!l.Hidden));
+            var lists = web.Lists.ToList().Where(l =>(!l.Hidden)).ToList();
+            Dictionary<Guid,string> listNameByGuid= lists.ToDictionary(list => list.Id, list =>recodeClassNames.ContainsKey(list.Title) ? recodeClassNames[list.Title] : list.EntityTypeName);
+
             var stringBuilder = new StringBuilder();
             foreach (var list in lists)
             {
-                stringBuilder.Append(PocoClassText(list));
+                stringBuilder.Append(PocoClassText(list, listNameByGuid));
             }
             return stringBuilder.ToString( );
         }
@@ -58,15 +69,28 @@ namespace Shmapper
         }
 
 
+        private string RefineFieldName(string fieldname)
+        {
+            Dictionary<string, string> recodeFieldNames = new Dictionary<string, string>()
+            {
+                { "Начало мероприятия","Start"},
+                { "Окончание мероприятия","End"},
+            
+            };
+            if (recodeFieldNames.ContainsKey(fieldname)) return recodeFieldNames[fieldname];
+            return fieldname;
 
-        private string PocoClassText(List list)
+        }
+
+        private string PocoClassText(List list, Dictionary<Guid, string> listNameByGuid)
         {
             var sb = new StringBuilder();
             Context.Load(list, l => l.Fields);
             Context.ExecuteQuery();
+            var generatedClassName = listNameByGuid[list.Id];
             sb.Append($@"
 [SharepointList(""{list.Title}"")]
-public partial class {list.EntityTypeName}:ISharepointItem // {list.Title}
+public partial class {generatedClassName}:ISharepointItem // {list.Title}
 {{
 ");
 
@@ -84,17 +108,35 @@ public partial class {list.EntityTypeName}:ISharepointItem // {list.Title}
                 string lookUp =  "";
                 Type spTypeToCSharp = SpTypeToCSharp(field.TypeAsString);
                 string nullableModifier = spTypeToCSharp.IsValueType&& (!field.Required) ? "?" : "";
-                if (field.TypeAsString == "Lookup")
+                if (field is FieldLookup)
                 {
+                    FieldLookup fieldLookup = field as FieldLookup;
+                    Guid listGuid;
+                    
                     lookUp = ",MapData.LookupValue";
-                    sb.Append($@"
+                    sb.Append(
+                        $@"
+/// <summary>
+///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  
+/// </summary>
                     [SharepointField(""{field.StaticName}"" , MapData.LookupId)]
-                        public  int {field.StaticName}Id {{get;set;}} //{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+                        public  int {RefineFieldName(field.StaticName)}Id {{get;set;}}
+ ");
+                    //если можем проставить ссылку  прописанный  
+                if (Guid.TryParse(fieldLookup.LookupList, out listGuid)&& listNameByGuid.ContainsKey(listGuid))
+                        sb.Append($@"
+/// <summary>
+///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  LookUp list {listNameByGuid[listGuid]}
+/// </summary>
+                        public  {listNameByGuid[listGuid]} {RefineFieldName(field.StaticName)}LookUp =>(new SpRepository<{listNameByGuid[listGuid]}>()).GetById({RefineFieldName(field.StaticName)}Id );//todo change  new repository on get from ninject
                     ");
                 }
                 sb.Append($@"
+/// <summary>
+///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+/// </summary>
                     [SharepointField(""{field.StaticName}"" {lookUp})]
-                        public {spTypeToCSharp.Name}{nullableModifier} {field.StaticName} {{get;set;}} //{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+                        public {spTypeToCSharp.Name}{nullableModifier} {RefineFieldName(field.StaticName)} {{get;set;}} 
                     ");
             }
             sb.Append($@"
