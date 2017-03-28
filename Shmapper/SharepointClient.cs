@@ -32,9 +32,54 @@ namespace Shmapper
                 { "Аудитории","Audience"},
                 { "Баннеры","Banner"},
                 { "Территории","Territory"},
+                { "Тип территории","TerritoryType"},
+                { "Территории локализация","TerritoryLocalization"},
                 { "Список мероприятий","Event"},
-                { "Решения","Decisions"},
+
                 { "Языки контента","ContentLang"},
+                { "Библиотека стилей","StyleLibrary"},
+                { "Вендоры","Vendor"},
+                { "Вендоры локализация","VendorLocalization"},
+                { "Внешние ссылки","ExternalReference"},
+                { "Внешние ссылки локализация","ExternalReferenceLocalization"},
+                { "Группы доступа","AudienceRole"},
+                { "Документы","SharedDocuments"},
+                { "Задачи рабочего процесса","WorkProcessTask"},
+                { "Изображения","Image"},
+                { "Категории","Category"},
+                { "Категории локализация","CategoryLocalization"},
+                { "Менеджеры","Manager"},
+                { "Менеджеры локализация","ManagerLocalization"},
+                { "Меню","Menu"},
+                { "Меню локализация","MenuLocalization"},
+                { "Направления Бизнеса","BusnessType"},
+                { "Направления Бизнеса локализованные","BusnessTypeLocalization"},
+                { "Настройки","Setting"},
+                { "Настройки уведомлений","NotificationSetting"},
+                { "Ресурсы","Resource"},
+                { "Решения","Decisions"},
+                { "Решения локализация","DecisionsLocalization"},
+                { "Роли","Role"},
+                { "Содержание акций","PromotionContent"},
+                
+                { "Содержание новостей","NewsContent"},
+                { "Сообщения - Связаться с нами","LinkWithUs"},
+                { "Список акций","Promotion"},
+                { "Список новостей","News"},
+                { "Список сообщений","Notification"},
+                { "Статус мероприятия","EventStatus"},
+                { "Территории мероприятия","EventLocation"},
+                { "Статус мероприятия локализация","EventStatusLocalization"},
+                { "Содержание мероприятий","EventContent"},
+                { "Тип мероприятия","EventType"},
+                { "Тип мероприятия локализация","EventTypeLocalization"},//Localization
+                { "Статусы публикации","PublishStatus"},
+                { "Теги сообщений","Tag"},
+                { "Текстовые страницы","TextPage"},
+                { "Тексты","TextPageContent"},
+                { "Тип контента","ContentType"},
+                { "Тип контента локализация","ContentTypeLocalization"},
+
             };
            
             var web = Context.Web;
@@ -61,6 +106,7 @@ namespace Shmapper
                 { "Number",typeof(int)},
                 { "Computed",typeof(string)},
                 { "DateTime",typeof(DateTime)},
+                { "Boolean",typeof(bool)},
                 
 
             };
@@ -89,8 +135,13 @@ namespace Shmapper
             Context.ExecuteQuery();
             var generatedClassName = listNameByGuid[list.Id];
             sb.Append($@"
+    /// <summary>
+    ///  {list.Title} 
+    ///  {list.Description.Replace("\n", String.Empty).Replace("\r", String.Empty)}
+    ///  {list.EntityTypeName}
+    /// </summary>
 [SharepointList(""{list.Title}"")]
-public partial class {generatedClassName}:ISharepointItem // {list.Title}
+public partial class {generatedClassName}:ISharepointItem 
 {{
 ");
 
@@ -111,32 +162,43 @@ public partial class {generatedClassName}:ISharepointItem // {list.Title}
                 if (field is FieldLookup)
                 {
                     FieldLookup fieldLookup = field as FieldLookup;
+                    string lookUpTypeId=fieldLookup.AllowMultipleValues ? "List<int>" : "int";
+                    
                     Guid listGuid;
                     
                     lookUp = ",MapData.LookupValue";
                     sb.Append(
                         $@"
 /// <summary>
-///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  
+///lookup Id(s) for {field.EntityPropertyName}:
+///{field.TypeAsString} 
+///{field.Description.Replace("/n"," ")}  
 /// </summary>
                     [SharepointField(""{field.StaticName}"" , MapData.LookupId)]
-                        public  int {RefineFieldName(field.StaticName)}Id {{get;set;}}
+                        public   {lookUpTypeId} {RefineFieldName(field.StaticName)}Id {{get;set;}}
  ");
                     //если можем проставить ссылку  прописанный  
-                if (Guid.TryParse(fieldLookup.LookupList, out listGuid)&& listNameByGuid.ContainsKey(listGuid))
+                    if (Guid.TryParse(fieldLookup.LookupList, out listGuid) && listNameByGuid.ContainsKey(listGuid))
+                    {
+                        string lookUpValueStr = fieldLookup.AllowMultipleValues ? $@" public IEnumerable<{listNameByGuid[listGuid]}> {RefineFieldName(field.StaticName)}LookUp =>{RefineFieldName(field.StaticName)}Id.Select(l=> (new SpRepository<{listNameByGuid[listGuid]}>()).GetById(l));//todo change  new repository on get from ninject":
+                             $@"  public  {listNameByGuid[listGuid]} {RefineFieldName(field.StaticName)}LookUp =>(new SpRepository<{listNameByGuid[listGuid]}>()).GetById({RefineFieldName(field.StaticName)}Id );//todo change  new repository on get from ninject"
+                            ;
                         sb.Append($@"
-/// <summary>
-///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  LookUp list {listNameByGuid[listGuid]}
+/// <summary> 
+///lookup values for  {field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  LookUp list {listNameByGuid[listGuid]}
+//fieldLookup.AllowMultipleValues:{fieldLookup.AllowMultipleValues}
 /// </summary>
-                        public  {listNameByGuid[listGuid]} {RefineFieldName(field.StaticName)}LookUp =>(new SpRepository<{listNameByGuid[listGuid]}>()).GetById({RefineFieldName(field.StaticName)}Id );//todo change  new repository on get from ninject
-                    ");
+                       {lookUpValueStr}
+                    ");   
+                    }
+
                 }
                 sb.Append($@"
 /// <summary>
 ///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
 /// </summary>
                     [SharepointField(""{field.StaticName}"" {lookUp})]
-                        public {spTypeToCSharp.Name}{nullableModifier} {RefineFieldName(field.StaticName)} {{get;set;}} 
+                        public {spTypeToCSharp.Name}{nullableModifier} {field.EntityPropertyName}{{get;set;}} 
                     ");
             }
             sb.Append($@"

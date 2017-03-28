@@ -7,23 +7,6 @@ using Shmapper;
 namespace SpTest
 {
 
-    // Mapping:
-    /*
-     /// <summary>
-     ///  <add key="ListVendorPageBlocks" value="Блок страницы вендора" />
-     /// </summary>
-
-            private const string Title = "Title";
-        private const string Order = "MontBlockOrder";
-        private const string Audience = "MontBlockAudience";
-        private const string Html = "MontBlockHtml";
-        private const string ImageUrl = "MontBlockImageUrl";
-        private const string ImageLink = "MontBlockLinkUrl";
-        private const string ImageTitle = "MontBlockImageTitle";
-        private const string Status = "MontStatus";
-        private const string IsDeactivated = "MontIsDeactivated";
-        private const string PageBlockType = "MontPageBlockType";
-         */
 
     [SharepointList("Блок страницы вендора")]
     public class SpVendorBlock : ISharepointItem
@@ -39,32 +22,37 @@ namespace SpTest
     [TestClass]
     public class DevSpConTest
     {
-     
+        private static  SharepointClient _sharepointClient;
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            _sharepointClient = new SharepointClient("http://sp-dev2016-obl.mont.ru/sites/b2b", new NetworkCredential("SP_Portal", "Mont2010"));
+        }
 
         [TestMethod]
         public void TestMethod1()
         {
-            var SharepointClient = new SharepointClient("http://sp-dev2016-obl.mont.ru/sites/b2b", new NetworkCredential("SP_Portal", "Mont2010"));
-            List<SpVendorBlock> spVendorBlocks = SharepointClient.GetAll<SpVendorBlock>();
+           
+            List<SpVendorBlock> spVendorBlocks = _sharepointClient.GetAll<SpVendorBlock>();
         }
         [TestMethod]
         public void TestMethod2()
         {
-            var SharepointClient = new SharepointClient("http://sp-dev2016-obl.mont.ru/sites/b2b", new NetworkCredential("SP_Portal", "Mont2010"));
-            List<SpVendorBlock> spVendorBlocks = SharepointClient.Query<SpVendorBlock>(vb => vb.Title == "ABBYY");
+           
+            List<SpVendorBlock> spVendorBlocks = _sharepointClient.Query<SpVendorBlock>(vb => vb.Title == "ABBYY");
         }
         [TestMethod]
         public void MapEventBlock()
         {
-            var SharepointClient = new SharepointClient("http://sp-dev2016-obl.mont.ru/sites/b2b", new NetworkCredential("SP_Portal", "Mont2010"));
-            List<EventBlocksList> spVendorBlocks = SharepointClient.GetAll<EventBlocksList>();
+           
+            List<EventBlocksList> spVendorBlocks = _sharepointClient.GetAll<EventBlocksList>();
 
         }
         [TestMethod]
         public void GeneratePocoClasses()
         {
-            var SharepointClient = new SharepointClient("http://sp-dev2016-obl.mont.ru/sites/b2b", new NetworkCredential("SP_Portal", "Mont2010"));
-            string generatePocoClasses = SharepointClient.GeneratePocoClasses();
+           
+            string generatePocoClasses = _sharepointClient.GeneratePocoClasses();
             Console.Write(generatePocoClasses);
         }
         
