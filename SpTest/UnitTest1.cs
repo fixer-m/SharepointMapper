@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shmapper;
 
 namespace SpTest
 {
-
-
-    [SharepointList("Блок страницы вендора")]
-    public class SpVendorBlock : ISharepointItem
-    {
-        [SharepointField("ID")]
-        public int Id { get; set; }
-
-        [SharepointField("Title")]
-        public string Title { get; set; }
-    }
-
-
     [TestClass]
     public class DevSpConTest
     {
@@ -42,106 +30,99 @@ namespace SpTest
             List<SpVendorBlock> spVendorBlocks = _sharepointClient.Query<SpVendorBlock>(vb => vb.Title == "ABBYY");
         }
         [TestMethod]
+        public void TestMethod3()
+        {
+          //  List<EventContent> eventContents = _sharepointClient.GetAll<EventContent>();
+            var ecc= _sharepointClient.Query<EventContent>(ec => ec.MontBlocksId==new List<int>(1)).FirstOrDefault();//x=> (x["MontBlocks"]== (DataTypes.LookupMultiId)"1")
+         //   _sharepointClient.Query<EventBlocksList>("");
+
+        }
+        [TestMethod]
+        public void TestMethod4()
+        {
+            var ecc = _sharepointClient.Test<EventContent>().ToList();
+
+        }
+
+        [TestMethod]
         public void MapEventBlock()
         {
            
             List<EventBlocksList> spVendorBlocks = _sharepointClient.GetAll<EventBlocksList>();
 
         }
+
+
+        [TestMethod]
+        public void MapEvents()
+        {
+
+            List<EventContent> spVendorBlocks = _sharepointClient.GetAll<EventContent>();
+
+        }
         [TestMethod]
         public void GeneratePocoClasses()
         {
-           
-            string generatePocoClasses = _sharepointClient.GeneratePocoClasses();
+            Dictionary<string, string> recodeClassNames = new Dictionary<string, string>()
+            {
+                { "Аудитории","Audience"},
+                { "Баннеры","Banner"},
+                { "Территории","Territory"},
+                { "Тип территории","TerritoryType"},
+                { "Территории локализация","TerritoryLocalization"},
+                { "Список мероприятий","Event"},
+                { "Языки контента","ContentLang"},
+                { "Библиотека стилей","StyleLibrary"},
+                { "Вендоры","Vendor"},
+                { "Вендоры локализация","VendorLocalization"},
+                { "Внешние ссылки","ExternalReference"},
+                { "Внешние ссылки локализация","ExternalReferenceLocalization"},
+                { "Группы доступа","AudienceRole"},
+                { "Документы","SharedDocuments"},
+                { "Задачи рабочего процесса","WorkProcessTask"},
+                { "Изображения","Image"},
+                { "Категории","Category"},
+                { "Категории локализация","CategoryLocalization"},
+                { "Менеджеры","Manager"},
+                { "Менеджеры локализация","ManagerLocalization"},
+                { "Меню","Menu"},
+                { "Меню локализация","MenuLocalization"},
+                { "Направления Бизнеса","BusnessType"},
+                { "Направления Бизнеса локализованные","BusnessTypeLocalization"},
+                { "Настройки","Setting"},
+                { "Настройки уведомлений","NotificationSetting"},
+                { "Ресурсы","Resource"},
+                { "Решения","Decisions"},
+                { "Решения локализация","DecisionsLocalization"},
+                { "Роли","Role"},
+                { "Содержание акций","PromotionContent"},
+                { "Содержание новостей","NewsContent"},
+                { "Сообщения - Связаться с нами","LinkWithUs"},
+                { "Список акций","Promotion"},
+                { "Список новостей","News"},
+                { "Список сообщений","Notification"},
+                { "Статус мероприятия","EventStatus"},
+                { "Территории мероприятия","EventLocation"},
+                { "Статус мероприятия локализация","EventStatusLocalization"},
+                { "Содержание мероприятий","EventContent"},
+                { "Тип мероприятия","EventType"},
+                { "Тип мероприятия локализация","EventTypeLocalization"},//Localization
+                { "Статусы публикации","PublishStatus"},
+                { "Теги сообщений","Tag"},
+                { "Текстовые страницы","TextPage"},
+                { "Тексты","TextPageContent"},
+                { "Тип контента","ContentType"},
+                { "Тип контента локализация","ContentTypeLocalization"},
+
+            };
+
+
+            string generatePocoClasses = _sharepointClient.GeneratePocoClasses(recodeClassNames);
             Console.Write(generatePocoClasses);
         }
-        
-        [SharepointList("Блок страницы мероприятий")]
-        public partial class EventBlocksList : ISharepointItem // Блок страницы мероприятий
-        {
 
-            [SharepointField("ID")]
-            public int Id { get; set; } //ID:Counter , 
+        //Содержание мероприятий
 
-            [SharepointField("Title")]
-            public String Title { get; set; } //Title:Text , 
-
-            [SharepointField("MontEvent", MapData.LookupId)]
-            public int MontEventId { get; set; } //MontEvent:Lookup , Мероприятие, к которому принадлежит блок
-
-            [SharepointField("MontEvent", MapData.LookupValue)]
-            public String MontEvent { get; set; } //MontEvent:Lookup , Мероприятие, к которому принадлежит блок
-
-            [SharepointField("MontBlockOrder")]
-            public Int32? MontBlockOrder { get; set; } //MontBlockOrder:Number , Порядок в котором будет отображаться блок на странице (меньше - выше)
-
-            [SharepointField("MontBlockAudience", MapData.LookupId)]
-            public int MontBlockAudienceId { get; set; } //MontBlockAudience:Lookup , Аудитория, которой виден блок
-
-            [SharepointField("MontBlockAudience", MapData.LookupValue)]
-            public String MontBlockAudience { get; set; } //MontBlockAudience:Lookup , Аудитория, которой виден блок
-
-            [SharepointField("MontBlockType", MapData.LookupId)]
-            public int MontBlockTypeId { get; set; } //MontBlockType:Lookup , Тип блока
-
-            [SharepointField("MontBlockType", MapData.LookupValue)]
-            public String MontBlockType { get; set; } //MontBlockType:Lookup , Тип блока
-
-            [SharepointField("MontBlockStatus", MapData.LookupId)]
-            public int MontBlockStatusId { get; set; } //MontBlockStatus:Lookup , Статус публикации блока
-
-            [SharepointField("MontBlockStatus", MapData.LookupValue)]
-            public String MontBlockStatus { get; set; } //MontBlockStatus:Lookup , Статус публикации блока
-
-            [SharepointField("MontBlockText")]
-            public String MontBlockText { get; set; } //MontBlockText:Text , Текст (зависит от типа блока, например, адрес мероприятия для блока Адрес)
-
-            [SharepointField("MontBlockHtml")]
-            public String MontBlockHtml { get; set; } //MontBlockHtml:Note , HTML для отображения внутри блока
-
-            [SharepointField("Modified")]
-            public DateTime? Modified { get; set; } //Modified:DateTime , 
-
-            [SharepointField("Created")]
-            public DateTime? Created { get; set; } //Created:DateTime , 
-
-            [SharepointField("Author")]
-            public String Author { get; set; } //Author:User , 
-
-            [SharepointField("Editor")]
-            public String Editor { get; set; } //Editor:User , 
-
-            [SharepointField("_UIVersionString")]
-            public String _UIVersionString { get; set; } //OData__UIVersionString:Text , 
-
-            [SharepointField("Attachments")]
-            public String Attachments { get; set; } //Attachments:Attachments , 
-
-            [SharepointField("ItemChildCount", MapData.LookupId)]
-            public int ItemChildCountId { get; set; } //ItemChildCount:Lookup , 
-
-            [SharepointField("ItemChildCount", MapData.LookupValue)]
-            public String ItemChildCount { get; set; } //ItemChildCount:Lookup , 
-
-            [SharepointField("FolderChildCount", MapData.LookupId)]
-            public int FolderChildCountId { get; set; } //FolderChildCount:Lookup , 
-
-            [SharepointField("FolderChildCount", MapData.LookupValue)]
-            public String FolderChildCount { get; set; } //FolderChildCount:Lookup , 
-
-            [SharepointField("AppAuthor", MapData.LookupId)]
-            public int AppAuthorId { get; set; } //AppAuthor:Lookup , 
-
-            [SharepointField("AppAuthor", MapData.LookupValue)]
-            public String AppAuthor { get; set; } //AppAuthor:Lookup , 
-
-            [SharepointField("AppEditor", MapData.LookupId)]
-            public int AppEditorId { get; set; } //AppEditor:Lookup , 
-
-            [SharepointField("AppEditor", MapData.LookupValue)]
-            public String AppEditor { get; set; } //AppEditor:Lookup , 
-
-        }//Блок страницы мероприятий
+        //Блок страницы мероприятий
     }
-
 }

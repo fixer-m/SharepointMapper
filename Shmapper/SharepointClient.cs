@@ -24,64 +24,16 @@ namespace Shmapper
             Mapper = new SharepointMapper(Context);
         }
 
-        public string GeneratePocoClasses()
+
+        /// <summary>
+        /// Code generation for map entity classes
+        /// </summary>
+        /// <param name="recodeClassNames">human readable class name  for spList  name , if internal list name  is not valid  class name it should be added in this dictionary </param>
+        /// <returns></returns>
+        public string GeneratePocoClasses(Dictionary<string, string> recodeClassNames)
         {
-            //некоторые имена списков  криво  переводятся в имена классов,  например Для  аудиторий формировалось кривое имя и для баннеров, поэтому их надо подменить на человеко читаеммые
-            Dictionary<string,string> recodeClassNames=new Dictionary<string, string>()
-            {
-                { "Аудитории","Audience"},
-                { "Баннеры","Banner"},
-                { "Территории","Territory"},
-                { "Тип территории","TerritoryType"},
-                { "Территории локализация","TerritoryLocalization"},
-                { "Список мероприятий","Event"},
-
-                { "Языки контента","ContentLang"},
-                { "Библиотека стилей","StyleLibrary"},
-                { "Вендоры","Vendor"},
-                { "Вендоры локализация","VendorLocalization"},
-                { "Внешние ссылки","ExternalReference"},
-                { "Внешние ссылки локализация","ExternalReferenceLocalization"},
-                { "Группы доступа","AudienceRole"},
-                { "Документы","SharedDocuments"},
-                { "Задачи рабочего процесса","WorkProcessTask"},
-                { "Изображения","Image"},
-                { "Категории","Category"},
-                { "Категории локализация","CategoryLocalization"},
-                { "Менеджеры","Manager"},
-                { "Менеджеры локализация","ManagerLocalization"},
-                { "Меню","Menu"},
-                { "Меню локализация","MenuLocalization"},
-                { "Направления Бизнеса","BusnessType"},
-                { "Направления Бизнеса локализованные","BusnessTypeLocalization"},
-                { "Настройки","Setting"},
-                { "Настройки уведомлений","NotificationSetting"},
-                { "Ресурсы","Resource"},
-                { "Решения","Decisions"},
-                { "Решения локализация","DecisionsLocalization"},
-                { "Роли","Role"},
-                { "Содержание акций","PromotionContent"},
-                
-                { "Содержание новостей","NewsContent"},
-                { "Сообщения - Связаться с нами","LinkWithUs"},
-                { "Список акций","Promotion"},
-                { "Список новостей","News"},
-                { "Список сообщений","Notification"},
-                { "Статус мероприятия","EventStatus"},
-                { "Территории мероприятия","EventLocation"},
-                { "Статус мероприятия локализация","EventStatusLocalization"},
-                { "Содержание мероприятий","EventContent"},
-                { "Тип мероприятия","EventType"},
-                { "Тип мероприятия локализация","EventTypeLocalization"},//Localization
-                { "Статусы публикации","PublishStatus"},
-                { "Теги сообщений","Tag"},
-                { "Текстовые страницы","TextPage"},
-                { "Тексты","TextPageContent"},
-                { "Тип контента","ContentType"},
-                { "Тип контента локализация","ContentTypeLocalization"},
-
-            };
-           
+            
+          
             var web = Context.Web;
             Context.Load(web,w=>w.Lists);
             Context.ExecuteQuery();
@@ -97,20 +49,20 @@ namespace Shmapper
             return stringBuilder.ToString( );
         }
 
-        private Type SpTypeToCSharp(string spType)
+        private Type SpTypeToCSharp(Field field)
         {
-            Dictionary<string, Type> decode = new Dictionary< string,Type>()
+             Dictionary<FieldType, Type> decode = new Dictionary<FieldType, Type>()
             {
-                { "User",typeof(string)},
-                { "Text",typeof(string)},
-                { "Number",typeof(int)},
-                { "Computed",typeof(string)},
-                { "DateTime",typeof(DateTime)},
-                { "Boolean",typeof(bool)},
-                
+
+                {FieldType.Counter,typeof(int)},
+                {FieldType.Number,typeof(int)},
+                {FieldType.Computed,typeof(string)},
+                {FieldType.DateTime,typeof(DateTime)},
+                {FieldType.Boolean,typeof(bool)},
 
             };
-            return decode.ContainsKey(spType) ? decode[spType] : typeof(string);
+            return decode.ContainsKey(field.FieldTypeKind) ? decode[field.FieldTypeKind] : typeof(string);
+           
 
         }
 
@@ -157,12 +109,19 @@ public partial class {generatedClassName}:ISharepointItem
             foreach (Field field in fields)
             {
                 string lookUp =  "";
-                Type spTypeToCSharp = SpTypeToCSharp(field.TypeAsString);
+                Type spTypeToCSharp = SpTypeToCSharp(field);
+                string typeName = spTypeToCSharp.Name;
                 string nullableModifier = spTypeToCSharp.IsValueType&& (!field.Required) ? "?" : "";
+
                 if (field is FieldLookup)
                 {
                     FieldLookup fieldLookup = field as FieldLookup;
-                    string lookUpTypeId=fieldLookup.AllowMultipleValues ? "List<int>" : "int";
+                    string lookUpTypeId = "int";
+                    if (fieldLookup.AllowMultipleValues)
+                    {
+                        lookUpTypeId = "List<int>";
+                        typeName = $@"List<{typeName}>";
+                    }
                     
                     Guid listGuid;
                     
@@ -180,31 +139,40 @@ public partial class {generatedClassName}:ISharepointItem
                     //если можем проставить ссылку  прописанный  
                     if (Guid.TryParse(fieldLookup.LookupList, out listGuid) && listNameByGuid.ContainsKey(listGuid))
                     {
-                        string lookUpValueStr = fieldLookup.AllowMultipleValues ? $@" public IEnumerable<{listNameByGuid[listGuid]}> {RefineFieldName(field.StaticName)}LookUp =>{RefineFieldName(field.StaticName)}Id.Select(l=> (new SpRepository<{listNameByGuid[listGuid]}>()).GetById(l));//todo change  new repository on get from ninject":
-                             $@"  public  {listNameByGuid[listGuid]} {RefineFieldName(field.StaticName)}LookUp =>(new SpRepository<{listNameByGuid[listGuid]}>()).GetById({RefineFieldName(field.StaticName)}Id );//todo change  new repository on get from ninject"
+                        string lookUpValueStr = fieldLookup.AllowMultipleValues ? $@" public IEnumerable<{listNameByGuid[listGuid]}> {RefineFieldName(field.StaticName)}LookUp(ISpClient client) =>{RefineFieldName(field.StaticName)}Id.Select(l=> client.GetById<{listNameByGuid[listGuid]}>(l));" :
+                             $@"  public  {listNameByGuid[listGuid]} {RefineFieldName(field.StaticName)}LookUp(ISpClient client) =>client.GetById<{listNameByGuid[listGuid]}>({RefineFieldName(field.StaticName)}Id );"
                             ;
                         sb.Append($@"
 /// <summary> 
 ///lookup values for  {field.EntityPropertyName}:{field.TypeAsString} , {field.Description}  LookUp list {listNameByGuid[listGuid]}
 //fieldLookup.AllowMultipleValues:{fieldLookup.AllowMultipleValues}
 /// </summary>
-                       {lookUpValueStr}
+                       {lookUpValueStr} 
                     ");   
                     }
 
                 }
+               
                 sb.Append($@"
 /// <summary>
 ///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
 /// </summary>
                     [SharepointField(""{field.StaticName}"" {lookUp})]
-                        public {spTypeToCSharp.Name}{nullableModifier} {field.EntityPropertyName}{{get;set;}} 
+                        public {typeName }{nullableModifier} {field.EntityPropertyName}{{get;set;}} 
                     ");
             }
             sb.Append($@"
                 }}//{list.Title}
 ");
             ; return sb.ToString();
+        }
+
+        public List<T> Test<T>() where T : ISharepointItem, new()
+        {
+            List<string> FieldsToLoad = Mapper.GetMappedFields<T>();
+            string spQuery = Camlex.Query().Where(x=> (x["MontBlocks"]== (DataTypes.LookupMultiId)"1")).ViewFields(FieldsToLoad).ToString(true);
+
+            return Query<T>(spQuery);
         }
 
         /// <summary>
@@ -215,7 +183,9 @@ public partial class {generatedClassName}:ISharepointItem
             var CamlexEpressionFilter = new ExpressionConverter().Visit(filter) as Expression<Func<ListItem, bool>>;
 
             List<string> FieldsToLoad = Mapper.GetMappedFields<T>();
+           // var compile = CamlexEpressionFilter.Compile();
             string spQuery = Camlex.Query().Where(CamlexEpressionFilter).ViewFields(FieldsToLoad).ToString(true);
+            
             return Query<T>(spQuery);
         }
 

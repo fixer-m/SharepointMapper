@@ -21,6 +21,13 @@ namespace Shmapper
     /// </summary>
     public class ExpressionConverter : ExpressionVisitor
     {
+        public override Expression Visit(Expression node)
+        {
+            Expression expression = base.Visit(node);
+            return expression;
+        }
+
+
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
             var NewParameters = new List<ParameterExpression>() { Expression.Parameter(typeof(ListItem), node.Parameters[0].Name) };
@@ -59,8 +66,10 @@ namespace Shmapper
                 {
                     var NewParameter = Expression.Parameter(typeof(ListItem), ((ParameterExpression)node.Expression).Name);
                     var GetItemMethod = Expression.Call(NewParameter, typeof(ListItem).GetMethod("get_Item"), new[] { Expression.Constant(FieldAttribute.InternalName) });
-                    var GetItemConverted = Expression.Convert(GetItemMethod, node.Member.ReflectedType.GetProperty(node.Member.Name).PropertyType);
-
+                    Type propertyType = //FieldAttribute.MapData == MapData.LookupId? typeof(DataTypes.LookupMultiId):
+                        node.Member.ReflectedType.GetProperty(node.Member.Name).PropertyType;
+                    var GetItemConverted = Expression.Convert(GetItemMethod, propertyType);
+                    
                     return GetItemConverted;
                 }
             }
