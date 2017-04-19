@@ -155,9 +155,9 @@ public partial class {generatedClassName}:ISharepointItem
                
                 sb.Append($@"
 /// <summary>
-///{field.EntityPropertyName}:{field.TypeAsString} , {field.Description}
+///({field.StaticName}){field.EntityPropertyName}:{field.TypeAsString} , {field.Description} 
 /// </summary>
-                    [SharepointField(""{field.StaticName}"" {lookUp})]
+                    [SharepointField(""{field.EntityPropertyName}"" {lookUp})]
                         public {typeName }{nullableModifier} {field.EntityPropertyName}{{get;set;}} 
                     ");
             }
