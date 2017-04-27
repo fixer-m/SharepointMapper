@@ -1441,6 +1441,32 @@ namespace SpTest
         public List<String> Menu { get; set; }
 
         /// <summary>
+        ///lookup Id(s) for Audience:
+        ///LookupMulti 
+        ///  
+        /// </summary>
+        [SharepointField("Audience", MapData.LookupId)]
+        public List<int> AudienceId { get; set; }
+
+        /// <summary> 
+        ///lookup values for  Audience:LookupMulti ,   LookUp list Audience
+        //fieldLookup.AllowMultipleValues:True
+        /// </summary>
+        public IEnumerable<Audience> AudienceLookUp(ISpClient client) => AudienceId.Select(l => client.GetById<Audience>(l));
+
+        /// <summary>
+        ///(Audience)Audience:LookupMulti ,  
+        /// </summary>
+        [SharepointField("Audience", MapData.LookupValue)]
+        public List<String> Audience { get; set; }
+
+        /// <summary>
+        ///(Html)Html:Note ,  
+        /// </summary>
+        [SharepointField("Html")]
+        public String Html { get; set; }
+
+        /// <summary>
         ///(Created)Created:DateTime ,  
         /// </summary>
         [SharepointField("Created")]
@@ -1745,20 +1771,6 @@ namespace SpTest
         /// </summary>
         [SharepointField("MontDocId")]
         public String MontDocId { get; set; }
-
-        /// <summary>
-        ///lookup Id(s) for SharedWithUsers:
-        ///UserMulti 
-        ///  
-        /// </summary>
-        [SharepointField("SharedWithUsers", MapData.LookupId)]
-        public List<int> SharedWithUsersId { get; set; }
-
-        /// <summary>
-        ///(SharedWithUsers)SharedWithUsers:UserMulti ,  
-        /// </summary>
-        [SharepointField("SharedWithUsers", MapData.LookupValue)]
-        public List<String> SharedWithUsers { get; set; }
 
         /// <summary>
         ///(Created)Created:DateTime ,  
@@ -2400,23 +2412,23 @@ namespace SpTest
 
         /// <summary>
         ///lookup Id(s) for MontBlockAudience:
-        ///Lookup 
+        ///LookupMulti 
         ///Аудитория, которой виден блок  
         /// </summary>
         [SharepointField("MontBlockAudience", MapData.LookupId)]
-        public int MontBlockAudienceId { get; set; }
+        public List<int> MontBlockAudienceId { get; set; }
 
         /// <summary> 
-        ///lookup values for  MontBlockAudience:Lookup , Аудитория, которой виден блок  LookUp list Audience
-        //fieldLookup.AllowMultipleValues:False
+        ///lookup values for  MontBlockAudience:LookupMulti , Аудитория, которой виден блок  LookUp list Audience
+        //fieldLookup.AllowMultipleValues:True
         /// </summary>
-        public Audience MontBlockAudienceLookUp(ISpClient client) => client.GetById<Audience>(MontBlockAudienceId);
+        public IEnumerable<Audience> MontBlockAudienceLookUp(ISpClient client) => MontBlockAudienceId.Select(l => client.GetById<Audience>(l));
 
         /// <summary>
-        ///(MontBlockAudience)MontBlockAudience:Lookup , Аудитория, которой виден блок 
+        ///(MontBlockAudience)MontBlockAudience:LookupMulti , Аудитория, которой виден блок 
         /// </summary>
         [SharepointField("MontBlockAudience", MapData.LookupValue)]
-        public String MontBlockAudience { get; set; }
+        public List<String> MontBlockAudience { get; set; }
 
         /// <summary>
         ///lookup Id(s) for MontBlockType:
@@ -2459,16 +2471,16 @@ namespace SpTest
         public String MontBlockStatus { get; set; }
 
         /// <summary>
-        ///(MontBlockHtml)MontBlockHtml:Note , HTML для отображения внутри блока 
-        /// </summary>
-        [SharepointField("MontBlockHtml")]
-        public String MontBlockHtml { get; set; }
-
-        /// <summary>
         ///(MontBlockText)MontBlockText:Text , Текст (зависит от типа блока, например, адрес мероприятия для блока Адрес) 
         /// </summary>
         [SharepointField("MontBlockText")]
         public String MontBlockText { get; set; }
+
+        /// <summary>
+        ///(MontBlockHtml)MontBlockHtml:Note , HTML для отображения внутри блока 
+        /// </summary>
+        [SharepointField("MontBlockHtml")]
+        public String MontBlockHtml { get; set; }
 
         /// <summary>
         ///(Modified)Modified:DateTime ,  
@@ -3201,6 +3213,348 @@ namespace SpTest
     }//Вложения
 
     /// <summary>
+    ///  Внешние ссылки 
+    ///  
+    ///  List19List
+    /// </summary>
+    [SharepointList("Внешние ссылки")]
+    public partial class ExternalReference : ISharepointItem
+    {
+
+        [SharepointField("ID")]
+        public int Id { get; set; } //ID:Counter , 
+
+        /// <summary>
+        ///(Title)Title:Text ,  
+        /// </summary>
+        [SharepointField("Title")]
+        public String Title { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Audience:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("Audience", MapData.LookupId)]
+        public int AudienceId { get; set; }
+
+        /// <summary> 
+        ///lookup values for  Audience:Lookup ,   LookUp list Audience
+        //fieldLookup.AllowMultipleValues:False
+        /// </summary>
+        public Audience AudienceLookUp(ISpClient client) => client.GetById<Audience>(AudienceId);
+
+        /// <summary>
+        ///(Audience)Audience:Lookup ,  
+        /// </summary>
+        [SharepointField("Audience", MapData.LookupValue)]
+        public String Audience { get; set; }
+
+        /// <summary>
+        ///(Modified)Modified:DateTime ,  
+        /// </summary>
+        [SharepointField("Modified")]
+        public DateTime? Modified { get; set; }
+
+        /// <summary>
+        ///(Created)Created:DateTime ,  
+        /// </summary>
+        [SharepointField("Created")]
+        public DateTime? Created { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Author:
+        ///User 
+        ///  
+        /// </summary>
+        [SharepointField("Author", MapData.LookupId)]
+        public int AuthorId { get; set; }
+
+        /// <summary>
+        ///(Author)Author:User ,  
+        /// </summary>
+        [SharepointField("Author", MapData.LookupValue)]
+        public String Author { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Editor:
+        ///User 
+        ///  
+        /// </summary>
+        [SharepointField("Editor", MapData.LookupId)]
+        public int EditorId { get; set; }
+
+        /// <summary>
+        ///(Editor)Editor:User ,  
+        /// </summary>
+        [SharepointField("Editor", MapData.LookupValue)]
+        public String Editor { get; set; }
+
+        /// <summary>
+        ///(_UIVersionString)OData__UIVersionString:Text ,  
+        /// </summary>
+        [SharepointField("OData__UIVersionString")]
+        public String OData__UIVersionString { get; set; }
+
+        /// <summary>
+        ///(Attachments)Attachments:Attachments ,  
+        /// </summary>
+        [SharepointField("Attachments")]
+        public String Attachments { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for ItemChildCount:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("ItemChildCount", MapData.LookupId)]
+        public int ItemChildCountId { get; set; }
+
+        /// <summary>
+        ///(ItemChildCount)ItemChildCount:Lookup ,  
+        /// </summary>
+        [SharepointField("ItemChildCount", MapData.LookupValue)]
+        public String ItemChildCount { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for FolderChildCount:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("FolderChildCount", MapData.LookupId)]
+        public int FolderChildCountId { get; set; }
+
+        /// <summary>
+        ///(FolderChildCount)FolderChildCount:Lookup ,  
+        /// </summary>
+        [SharepointField("FolderChildCount", MapData.LookupValue)]
+        public String FolderChildCount { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for AppAuthor:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("AppAuthor", MapData.LookupId)]
+        public int AppAuthorId { get; set; }
+
+        /// <summary>
+        ///(AppAuthor)AppAuthor:Lookup ,  
+        /// </summary>
+        [SharepointField("AppAuthor", MapData.LookupValue)]
+        public String AppAuthor { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for AppEditor:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("AppEditor", MapData.LookupId)]
+        public int AppEditorId { get; set; }
+
+        /// <summary>
+        ///(AppEditor)AppEditor:Lookup ,  
+        /// </summary>
+        [SharepointField("AppEditor", MapData.LookupValue)]
+        public String AppEditor { get; set; }
+
+    }//Внешние ссылки
+
+    /// <summary>
+    ///  Внешние ссылки локализация 
+    ///  
+    ///  List20List
+    /// </summary>
+    [SharepointList("Внешние ссылки локализация")]
+    public partial class ExternalReferenceLocalization : ISharepointItem
+    {
+
+        [SharepointField("ID")]
+        public int Id { get; set; } //ID:Counter , 
+
+        /// <summary>
+        ///(Title)Title:Text ,  
+        /// </summary>
+        [SharepointField("Title")]
+        public String Title { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Link:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("Link", MapData.LookupId)]
+        public int LinkId { get; set; }
+
+        /// <summary> 
+        ///lookup values for  Link:Lookup ,   LookUp list ExternalReference
+        //fieldLookup.AllowMultipleValues:False
+        /// </summary>
+        public ExternalReference LinkLookUp(ISpClient client) => client.GetById<ExternalReference>(LinkId);
+
+        /// <summary>
+        ///(Link)Link:Lookup ,  
+        /// </summary>
+        [SharepointField("Link", MapData.LookupValue)]
+        public String Link { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Language:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("Language", MapData.LookupId)]
+        public int LanguageId { get; set; }
+
+        /// <summary> 
+        ///lookup values for  Language:Lookup ,   LookUp list ContentLang
+        //fieldLookup.AllowMultipleValues:False
+        /// </summary>
+        public ContentLang LanguageLookUp(ISpClient client) => client.GetById<ContentLang>(LanguageId);
+
+        /// <summary>
+        ///(Language)Language:Lookup ,  
+        /// </summary>
+        [SharepointField("Language", MapData.LookupValue)]
+        public String Language { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Territories:
+        ///LookupMulti 
+        ///  
+        /// </summary>
+        [SharepointField("Territories", MapData.LookupId)]
+        public List<int> TerritoriesId { get; set; }
+
+        /// <summary> 
+        ///lookup values for  Territories:LookupMulti ,   LookUp list Territory
+        //fieldLookup.AllowMultipleValues:True
+        /// </summary>
+        public IEnumerable<Territory> TerritoriesLookUp(ISpClient client) => TerritoriesId.Select(l => client.GetById<Territory>(l));
+
+        /// <summary>
+        ///(Territories)Territories:LookupMulti ,  
+        /// </summary>
+        [SharepointField("Territories", MapData.LookupValue)]
+        public List<String> Territories { get; set; }
+
+        /// <summary>
+        ///(Url)Url:Text ,  
+        /// </summary>
+        [SharepointField("Url")]
+        public String Url { get; set; }
+
+        /// <summary>
+        ///(Modified)Modified:DateTime ,  
+        /// </summary>
+        [SharepointField("Modified")]
+        public DateTime? Modified { get; set; }
+
+        /// <summary>
+        ///(Created)Created:DateTime ,  
+        /// </summary>
+        [SharepointField("Created")]
+        public DateTime? Created { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Author:
+        ///User 
+        ///  
+        /// </summary>
+        [SharepointField("Author", MapData.LookupId)]
+        public int AuthorId { get; set; }
+
+        /// <summary>
+        ///(Author)Author:User ,  
+        /// </summary>
+        [SharepointField("Author", MapData.LookupValue)]
+        public String Author { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for Editor:
+        ///User 
+        ///  
+        /// </summary>
+        [SharepointField("Editor", MapData.LookupId)]
+        public int EditorId { get; set; }
+
+        /// <summary>
+        ///(Editor)Editor:User ,  
+        /// </summary>
+        [SharepointField("Editor", MapData.LookupValue)]
+        public String Editor { get; set; }
+
+        /// <summary>
+        ///(_UIVersionString)OData__UIVersionString:Text ,  
+        /// </summary>
+        [SharepointField("OData__UIVersionString")]
+        public String OData__UIVersionString { get; set; }
+
+        /// <summary>
+        ///(Attachments)Attachments:Attachments ,  
+        /// </summary>
+        [SharepointField("Attachments")]
+        public String Attachments { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for ItemChildCount:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("ItemChildCount", MapData.LookupId)]
+        public int ItemChildCountId { get; set; }
+
+        /// <summary>
+        ///(ItemChildCount)ItemChildCount:Lookup ,  
+        /// </summary>
+        [SharepointField("ItemChildCount", MapData.LookupValue)]
+        public String ItemChildCount { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for FolderChildCount:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("FolderChildCount", MapData.LookupId)]
+        public int FolderChildCountId { get; set; }
+
+        /// <summary>
+        ///(FolderChildCount)FolderChildCount:Lookup ,  
+        /// </summary>
+        [SharepointField("FolderChildCount", MapData.LookupValue)]
+        public String FolderChildCount { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for AppAuthor:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("AppAuthor", MapData.LookupId)]
+        public int AppAuthorId { get; set; }
+
+        /// <summary>
+        ///(AppAuthor)AppAuthor:Lookup ,  
+        /// </summary>
+        [SharepointField("AppAuthor", MapData.LookupValue)]
+        public String AppAuthor { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for AppEditor:
+        ///Lookup 
+        ///  
+        /// </summary>
+        [SharepointField("AppEditor", MapData.LookupId)]
+        public int AppEditorId { get; set; }
+
+        /// <summary>
+        ///(AppEditor)AppEditor:Lookup ,  
+        /// </summary>
+        [SharepointField("AppEditor", MapData.LookupValue)]
+        public String AppEditor { get; set; }
+
+    }//Внешние ссылки локализация
+
+    /// <summary>
     ///  Группы доступа 
     ///  
     ///  List4List
@@ -3833,6 +4187,32 @@ namespace SpTest
         public int Id { get; set; } //ID:Counter , 
 
         /// <summary>
+        ///(FileLeafRef)FileLeafRef:File ,  
+        /// </summary>
+        [SharepointField("FileLeafRef")]
+        public String FileLeafRef { get; set; }
+
+        /// <summary>
+        ///(Title)Title:Text ,  
+        /// </summary>
+        [SharepointField("Title")]
+        public String Title { get; set; }
+
+        /// <summary>
+        ///lookup Id(s) for SharedWithUsers:
+        ///UserMulti 
+        ///  
+        /// </summary>
+        [SharepointField("SharedWithUsers", MapData.LookupId)]
+        public List<int> SharedWithUsersId { get; set; }
+
+        /// <summary>
+        ///(SharedWithUsers)SharedWithUsers:UserMulti ,  
+        /// </summary>
+        [SharepointField("SharedWithUsers", MapData.LookupValue)]
+        public List<String> SharedWithUsers { get; set; }
+
+        /// <summary>
         ///(Created)Created:DateTime ,  
         /// </summary>
         [SharepointField("Created")]
@@ -3891,12 +4271,6 @@ namespace SpTest
         /// </summary>
         [SharepointField("CheckoutUser", MapData.LookupValue)]
         public String CheckoutUser { get; set; }
-
-        /// <summary>
-        ///(FileLeafRef)FileLeafRef:File ,  
-        /// </summary>
-        [SharepointField("FileLeafRef")]
-        public String FileLeafRef { get; set; }
 
         /// <summary>
         ///lookup Id(s) for OData__CheckinComment:
@@ -4001,12 +4375,6 @@ namespace SpTest
         /// </summary>
         [SharepointField("ParentLeafName", MapData.LookupValue)]
         public String ParentLeafName { get; set; }
-
-        /// <summary>
-        ///(Title)Title:Text ,  
-        /// </summary>
-        [SharepointField("Title")]
-        public String Title { get; set; }
 
     }//Изображения
 
@@ -10389,6 +10757,24 @@ namespace SpTest
         public String Initiator { get; set; }
 
         /// <summary>
+        ///(Начало мероприятия)MontEventStarts:DateTime , Начало мероприятия в локальном времени города проведения 
+        /// </summary>
+        [SharepointField("MontEventStarts")]
+        public DateTime? MontEventStarts { get; set; }
+
+        /// <summary>
+        ///(Окончание мероприятия)MontEventEnds:DateTime , Окончание мероприятия в локальном времени города проведения 
+        /// </summary>
+        [SharepointField("MontEventEnds")]
+        public DateTime? MontEventEnds { get; set; }
+
+        /// <summary>
+        ///(MontRegEnds)MontRegEnds:DateTime , Окончание регистрации в локальном времени города проведения 
+        /// </summary>
+        [SharepointField("MontRegEnds")]
+        public DateTime? MontRegEnds { get; set; }
+
+        /// <summary>
         ///lookup Id(s) for MontTerritory:
         ///Lookup 
         ///Город проведения мероприятия  
@@ -10409,34 +10795,16 @@ namespace SpTest
         public String MontTerritory { get; set; }
 
         /// <summary>
-        ///(MontEventStarts)MontEventStarts:DateTime , Начало мероприятия в локальном времени города проведения 
+        ///(MontEventImg)MontEventImg:URL , Ссылка на картинку, которая будет отображаться в заголовке новости (не в анонсе) 
         /// </summary>
-        [SharepointField("MontEventStarts")]
-        public DateTime? MontEventStarts { get; set; }
-
-        /// <summary>
-        ///(MontEventEnds)MontEventEnds:DateTime , Окончание мероприятия в локальном времени города проведения 
-        /// </summary>
-        [SharepointField("MontEventEnds")]
-        public DateTime? MontEventEnds { get; set; }
+        [SharepointField("MontEventImg")]
+        public String MontEventImg { get; set; }
 
         /// <summary>
         ///(MontRegStarts)MontRegStarts:DateTime , Начало регистрации в локальном времени города проведения 
         /// </summary>
         [SharepointField("MontRegStarts")]
         public DateTime? MontRegStarts { get; set; }
-
-        /// <summary>
-        ///(MontRegEnds)MontRegEnds:DateTime , Окончание регистрации в локальном времени города проведения 
-        /// </summary>
-        [SharepointField("MontRegEnds")]
-        public DateTime? MontRegEnds { get; set; }
-
-        /// <summary>
-        ///(MontEventImg)MontEventImg:URL , Ссылка на картинку, которая будет отображаться в заголовке новости (не в анонсе) 
-        /// </summary>
-        [SharepointField("MontEventImg")]
-        public String MontEventImg { get; set; }
 
         /// <summary>
         ///(Modified)Modified:DateTime ,  

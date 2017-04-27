@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -119,7 +120,7 @@ namespace SpTest
 
 
             string generatePocoClasses = _sharepointClient.GeneratePocoClasses(recodeClassNames);
-            Console.Write(generatePocoClasses);
+            Trace.Write(generatePocoClasses);
         }
 
         //Содержание мероприятий
