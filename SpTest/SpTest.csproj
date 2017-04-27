@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Include="EventBlocksList.cs" />
     <Compile Include="EventContent.cs" />
+    <Compile Include="MapTest.cs" />
+    <Compile Include="SpEntity.cs" />
     <Compile Include="SpVendorBlock.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
