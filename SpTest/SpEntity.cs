@@ -8,6 +8,7 @@ using Shmapper;
 namespace SpTest
 {
 
+
     /// <summary>
     ///  DocCategory 
     ///  
@@ -2412,23 +2413,23 @@ namespace SpTest
 
         /// <summary>
         ///lookup Id(s) for MontBlockAudience:
-        ///LookupMulti 
+        ///Lookup 
         ///Аудитория, которой виден блок  
         /// </summary>
         [SharepointField("MontBlockAudience", MapData.LookupId)]
-        public List<int> MontBlockAudienceId { get; set; }
+        public int MontBlockAudienceId { get; set; }
 
         /// <summary> 
-        ///lookup values for  MontBlockAudience:LookupMulti , Аудитория, которой виден блок  LookUp list Audience
-        //fieldLookup.AllowMultipleValues:True
+        ///lookup values for  MontBlockAudience:Lookup , Аудитория, которой виден блок  LookUp list Audience
+        //fieldLookup.AllowMultipleValues:False
         /// </summary>
-        public IEnumerable<Audience> MontBlockAudienceLookUp(ISpClient client) => MontBlockAudienceId.Select(l => client.GetById<Audience>(l));
+        public Audience MontBlockAudienceLookUp(ISpClient client) => client.GetById<Audience>(MontBlockAudienceId);
 
         /// <summary>
-        ///(MontBlockAudience)MontBlockAudience:LookupMulti , Аудитория, которой виден блок 
+        ///(MontBlockAudience)MontBlockAudience:Lookup , Аудитория, которой виден блок 
         /// </summary>
         [SharepointField("MontBlockAudience", MapData.LookupValue)]
-        public List<String> MontBlockAudience { get; set; }
+        public String MontBlockAudience { get; set; }
 
         /// <summary>
         ///lookup Id(s) for MontBlockType:
